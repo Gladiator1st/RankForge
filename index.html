@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RankForge — Valorant RFR Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Ensure absolute seamlessness during window frame load */
+      html, body, #root {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #080B10;
+        color: #F8FAFC;
+        overflow: hidden;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      /* Custom Esports Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(8, 11, 16, 0.7);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1C2735;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #2A3B4F;
+      }
+    </style>
+  </head>
+  <body class="bg-val-bg text-val-light antialiased select-none overflow-hidden font-sans">
+    <div id="root" class="h-full w-full flex flex-col"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
