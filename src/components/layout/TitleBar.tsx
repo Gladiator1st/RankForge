@@ -7,10 +7,7 @@ import {
   UserPlus, 
   ClipboardList, 
   Zap,
-  LayoutGrid,
-  Table as TableIcon,
-  ShieldCheck,
-  Archive
+  User
 } from 'lucide-react';
 import { RiotStatus, ViewMode } from '../../types';
 import { sound } from '../../services/soundEffects';
@@ -25,21 +22,17 @@ interface TitleBarProps {
   onOpenSettings: () => void;
   onCloseApp?: () => void;
   sessionElapsed?: string;
-  showArchive?: boolean;
-  onToggleShowArchive?: () => void;
 }
 
 export const TitleBar: React.FC<TitleBarProps> = React.memo(({
   riotStatus,
-  viewMode,
+  viewMode: _viewMode,
   onViewModeChange,
   onOpenAddAccount,
   onOpenBulkImport,
   onOpenSettings,
   onCloseApp,
   sessionElapsed,
-  showArchive = false,
-  onToggleShowArchive,
 }) => {
   const handleMinimize = () => {
     sound.playTacticalClick();
@@ -70,7 +63,7 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
             alt="RankForge" 
             className="w-6 h-6 rounded object-contain drop-shadow-[0_0_8px_rgba(255,70,85,0.4)] shrink-0 select-none pointer-events-none" 
           />
-          <span className="font-display font-black text-sm tracking-wider uppercase bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent whitespace-nowrap shrink-0">
+          <span className="font-display font-bold text-sm tracking-wider uppercase bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent whitespace-nowrap shrink-0">
             RankForge
           </span>
         </div>
@@ -105,94 +98,59 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
         )}
       </div>
 
-      {/* Center: Action Buttons & View Toggles */}
+      {/* Center: Fixed Geometric Center (Permanently anchored at 50% midpoint so it never shifts when left status/timer changes) */}
       <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 z-10 pointer-events-auto">
-        {/* View Mode Toggle: Cards vs Pro Table */}
-        <div className="flex items-center p-0.5 bg-val-card rounded-md border border-val-border shrink-0 app-no-drag">
-          <button
-            onClick={() => { sound.playTacticalClick(); onViewModeChange('table'); }}
-            className={`h-7 flex items-center gap-1 px-2 rounded text-xs font-bold transition-all shrink-0 ${
-              viewMode === 'table' ? 'bg-val-red text-white shadow-sm shadow-val-red/30' : 'text-val-muted hover:text-white'
-            }`}
-            title="Switch to Pro Table View"
-          >
-            <TableIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Table</span>
-          </button>
-          <button
-            onClick={() => { sound.playTacticalClick(); onViewModeChange('cards'); }}
-            className={`h-7 flex items-center gap-1 px-2 rounded text-xs font-bold transition-all shrink-0 ${
-              viewMode === 'cards' ? 'bg-val-red text-white shadow-sm shadow-val-red/30' : 'text-val-muted hover:text-white'
-            }`}
-            title="Switch to Cards Grid View"
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Cards</span>
-          </button>
-        </div>
-
-        {/* Mini HUD Overlay Launcher */}
+        {/* Dedicated Mini HUD Overlay Launcher */}
         <button
           onClick={() => { sound.playTacticalClick(); onViewModeChange('hud'); }}
-          className="h-7 flex items-center gap-1.5 px-2.5 rounded bg-val-card hover:bg-val-cardHover border border-val-border text-xs font-semibold text-amber-300 hover:text-amber-200 transition-all shrink-0 whitespace-nowrap app-no-drag shadow-sm"
+          className="h-7 flex items-center gap-1.5 px-2.5 rounded bg-val-card hover:bg-val-cardHover border border-val-border text-xs font-semibold text-amber-300 hover:text-amber-200 transition-all shrink-0 whitespace-nowrap app-no-drag shadow-sm cursor-pointer"
           title="Launch Ultra-Compact Always-On-Top Mini HUD Overlay"
         >
           <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
           <span>Mini HUD</span>
         </button>
 
+        {/* Quick Action Buttons */}
         <div className="h-4 w-px bg-val-border mx-0.5 shrink-0" />
 
-        {/* Add Account */}
         <button
           onClick={() => { sound.playTacticalClick(); onOpenAddAccount(); }}
-          className="h-7 flex items-center gap-1.5 px-2.5 bg-val-red/90 hover:bg-val-red text-white text-xs font-medium rounded transition-all shadow-sm shadow-val-red/30 active:scale-95 shrink-0 whitespace-nowrap app-no-drag"
-          title="Add single account"
+          className="h-7 flex items-center gap-1.5 px-2.5 bg-val-red/90 hover:bg-val-red text-white text-xs font-medium rounded transition-all shadow-sm shadow-val-red/30 active:scale-95 shrink-0 whitespace-nowrap app-no-drag cursor-pointer"
+          title="Add single account (Ctrl+N)"
         >
           <UserPlus className="w-3.5 h-3.5 shrink-0" />
-          <span>Add Account</span>
+          <span className="whitespace-nowrap">
+            Add<span className="hidden xl:inline"> Account</span>
+          </span>
         </button>
 
-        {/* Import List */}
         <button
           onClick={() => { sound.playTacticalClick(); onOpenBulkImport(); }}
-          className="h-7 flex items-center gap-1.5 px-2.5 bg-val-card hover:bg-val-cardHover border border-val-border text-val-light text-xs font-medium rounded transition-all active:scale-95 shrink-0 whitespace-nowrap app-no-drag"
-          title="Bulk import from Discord / clipboard list"
+          className="h-7 flex items-center gap-1.5 px-2.5 bg-val-card hover:bg-val-cardHover border border-val-border text-val-light text-xs font-medium rounded transition-all active:scale-95 shrink-0 whitespace-nowrap app-no-drag cursor-pointer"
+          title="Bulk import from Discord / clipboard list (Ctrl+B)"
         >
           <ClipboardList className="w-3.5 h-3.5 shrink-0" />
-          <span>Import List</span>
-        </button>
-
-        {/* Archive Toggle */}
-        <button
-          onClick={() => { sound.playTacticalClick(); onToggleShowArchive?.(); }}
-          className={`h-7 flex items-center gap-1.5 px-2.5 rounded text-xs font-semibold transition-all shrink-0 whitespace-nowrap app-no-drag shadow-sm ${
-            showArchive
-              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-              : 'bg-val-card hover:bg-val-cardHover border border-val-border text-val-muted hover:text-val-light'
-          }`}
-          title="Toggle Archive / Completed Accounts Vault"
-        >
-          <Archive className="w-3.5 h-3.5" />
-          <span>{showArchive ? 'Viewing Vault' : 'Archive'}</span>
+          <span className="whitespace-nowrap">
+            Import<span className="hidden xl:inline"> List</span>
+          </span>
         </button>
       </div>
 
-      {/* Right: Badge, Settings & Window Controls */}
+      {/* Right: Role Badge, Settings & Window Controls */}
       <div className="flex items-center gap-1.5 app-no-drag shrink-0 ml-auto z-20 pl-3 border-l border-val-border/50 whitespace-nowrap bg-val-bg/95">
         {/* Solo FOSS Badge */}
         <div 
-          className="h-7 flex items-center gap-1.5 px-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold select-none shrink-0 shadow-sm"
-          title="RankForge is 100% Free & Open Source under MIT License"
+          className="h-7 flex items-center gap-1.5 px-3 rounded-lg border text-xs font-bold font-display tracking-wider uppercase transition-all shrink-0 shadow-sm bg-blue-500/15 border-blue-500/40 text-blue-300 shadow-[0_0_12px_rgba(56,189,248,0.15)] select-none"
+          title="RankForge Solo Grinder (100% Free & Open Source)"
         >
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <User className="w-3.5 h-3.5 text-blue-400" />
           <span>Solo Grinder • FOSS</span>
         </div>
 
         {/* Settings Button */}
         <button
           onClick={() => { sound.playTacticalClick(); onOpenSettings(); }}
-          className="w-8 h-8 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-card transition-colors shrink-0"
+          className="w-8 h-8 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-card transition-colors shrink-0 cursor-pointer"
           title="Settings (Discord, Sound, Riot Path, Auto-Updates)"
         >
           <Settings className="w-4 h-4" />
@@ -203,7 +161,7 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
         {/* Window Controls */}
         <button
           onClick={handleMinimize}
-          className="w-8 h-8 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-card transition-colors shrink-0"
+          className="w-8 h-8 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-card transition-colors shrink-0 cursor-pointer"
           title="Minimize to taskbar / tray"
         >
           <Minus className="w-4 h-4" />
@@ -211,7 +169,7 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
 
         <button
           onClick={handleMaximize}
-          className="w-8 h-8 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-card transition-colors shrink-0"
+          className="w-8 h-8 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-card transition-colors shrink-0 cursor-pointer"
           title="Maximize window"
         >
           <Square className="w-3.5 h-3.5" />
@@ -219,8 +177,8 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
 
         <button
           onClick={handleClose}
-          className="w-8 h-8 rounded flex items-center justify-center text-val-muted hover:text-val-red hover:bg-val-red/10 transition-colors shrink-0"
-          title="Close / Minimize to tray"
+          className="w-8 h-8 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-red transition-colors shrink-0 cursor-pointer"
+          title="Close application"
         >
           <X className="w-4 h-4" />
         </button>
@@ -228,3 +186,5 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
     </header>
   );
 });
+
+export default TitleBar;

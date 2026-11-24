@@ -282,6 +282,45 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [autoLoginStatus]);
 
+  // Global Keyboard Shortcuts (Ctrl+N, Ctrl+B, Ctrl+S, Ctrl+1, Ctrl+2, Escape)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setActiveModal(null);
+        setSelectedAccount(null);
+        setDeleteTargetIds(null);
+        setIsExitModalOpen(false);
+        setDetectedAccountData(null);
+        setLaunchPasswordAccount(null);
+      } else if (e.ctrlKey && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        sound.playTacticalClick();
+        setActiveModal('add_account');
+      } else if (e.ctrlKey && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        sound.playTacticalClick();
+        setActiveModal('bulk_import');
+      } else if (e.ctrlKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        sound.playTacticalClick();
+        setActiveModal('settings');
+      } else if (e.ctrlKey && e.key === '1') {
+        e.preventDefault();
+        handleViewModeChange('cards');
+      } else if (e.ctrlKey && e.key === '2') {
+        e.preventDefault();
+        handleViewModeChange('table');
+      } else if (e.ctrlKey && e.key === '3') {
+        e.preventDefault();
+        sound.playTacticalClick();
+        setShowArchive((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // 1-second countdown interval
   useEffect(() => {
     const interval = setInterval(() => {
@@ -537,10 +576,25 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  return (
-    <div className="h-screen w-screen flex flex-col bg-val-bg text-val-light select-none overflow-hidden font-sans">
-      <InAppUpdaterBanner />
+  const handleExitConfirm = useCallback(async (doNotShowAgain: boolean) => {
+    if (doNotShowAgain) {
+      await handleSaveSettings({ confirm_exit: false, close_to_tray: false });
+    }
+    setIsExitModalOpen(false);
+    window.rfrApi?.close?.();
+  }, [handleSaveSettings]);
 
+  const handleMinimizeToTrayConfirm = useCallback(async (doNotShowAgain: boolean) => {
+    if (doNotShowAgain) {
+      await handleSaveSettings({ confirm_exit: false, close_to_tray: true });
+    }
+    setIsExitModalOpen(false);
+    window.rfrApi?.minimizeToTray?.() || window.rfrApi?.close?.();
+  }, [handleSaveSettings]);
+
+  return (
+    <div className="h-full w-full flex flex-col bg-val-bg text-val-light overflow-hidden font-sans">
+      {/* 1. Custom Frameless Esports TitleBar */}
       <TitleBar
         riotStatus={riotStatus}
         viewMode={viewMode}
@@ -556,9 +610,10 @@ export const App: React.FC = () => {
           }
         }}
         sessionElapsed={sessionElapsed}
-        showArchive={showArchive}
-        onToggleShowArchive={() => setShowArchive((prev) => !prev)}
       />
+
+      {/* Seamless In-App Auto-Update Banner */}
+      <InAppUpdaterBanner />
 
       {viewMode === 'hud' ? (
         <MiniHudOverlay
@@ -676,11 +731,9 @@ export const App: React.FC = () => {
 
       <ConfirmExitModal
         isOpen={isExitModalOpen}
-        onConfirm={() => {
-          setIsExitModalOpen(false);
-          window.rfrApi?.close();
-        }}
         onClose={() => setIsExitModalOpen(false)}
+        onConfirmExit={handleExitConfirm}
+        onMinimizeToTray={handleMinimizeToTrayConfirm}
       />
 
       <DetectedAccountModal
