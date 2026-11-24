@@ -55,21 +55,21 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
   return (
     <header className="relative h-12 min-h-[48px] max-h-[48px] bg-val-bg/95 border-b border-val-border flex items-center justify-between px-3 select-none app-drag-region shrink-0 z-50 whitespace-nowrap overflow-hidden">
       {/* Left: Branding & Connection Status */}
-      <div className="flex items-center gap-2.5 shrink-0 whitespace-nowrap z-20">
-        <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 whitespace-nowrap z-20">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <img 
             src={appIcon} 
             alt="RankForge" 
-            className="w-6 h-6 rounded object-contain drop-shadow-[0_0_8px_rgba(255,70,85,0.4)] shrink-0 select-none pointer-events-none" 
+            className="w-5 h-5 sm:w-6 sm:h-6 rounded object-contain drop-shadow-[0_0_8px_rgba(255,70,85,0.4)] shrink-0 select-none pointer-events-none" 
           />
-          <span className="font-display font-bold text-sm tracking-wider uppercase bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent whitespace-nowrap shrink-0">
+          <span className="font-display font-bold text-xs sm:text-sm tracking-wider uppercase bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent whitespace-nowrap shrink-0">
             RankForge
           </span>
         </div>
 
         {/* Live Riot Radar Status */}
         <div 
-          className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono border bg-val-surface/90 app-no-drag shrink-0 whitespace-nowrap max-w-[170px] xl:max-w-[240px] truncate shadow-inner"
+          className="flex items-center gap-1.5 px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-mono border bg-val-surface/90 app-no-drag shrink-0 whitespace-nowrap max-w-[120px] sm:max-w-[170px] xl:max-w-[240px] truncate shadow-inner"
           style={{
             borderColor: riotStatus.is_connected ? 'rgba(0, 245, 212, 0.45)' : 'rgba(255, 255, 255, 0.08)',
           }}
@@ -88,7 +88,7 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
         {/* Session Timer (VALORANT running) */}
         {riotStatus.is_connected && riotStatus.is_game_running && sessionElapsed && (
           <div
-            className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 app-no-drag shrink-0 whitespace-nowrap shadow-sm shadow-emerald-950/20"
+            className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-mono border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 app-no-drag shrink-0 whitespace-nowrap shadow-sm shadow-emerald-950/20"
             title="Active in-game session timer (VALORANT running)"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
@@ -97,16 +97,16 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
         )}
       </div>
 
-      {/* Center: Fixed Geometric Center (Permanently anchored at 50% midpoint so it never shifts when left status/timer changes) */}
-      <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 z-10 pointer-events-auto">
+      {/* Center: Action Controls */}
+      <div className="flex items-center justify-center gap-1 sm:gap-1.5 z-10 pointer-events-auto mx-auto shrink-0">
         {/* Dedicated Mini HUD Overlay Launcher */}
         <button
           onClick={() => { sound.playTacticalClick(); onViewModeChange('hud'); }}
-          className="h-7 flex items-center gap-1.5 px-2.5 rounded bg-val-card hover:bg-val-cardHover border border-val-border text-xs font-semibold text-amber-300 hover:text-amber-200 transition-all shrink-0 whitespace-nowrap app-no-drag shadow-sm cursor-pointer"
+          className="h-7 flex items-center gap-1.5 px-2 sm:px-2.5 rounded bg-val-card hover:bg-val-cardHover border border-val-border text-xs font-semibold text-amber-300 hover:text-amber-200 transition-all shrink-0 whitespace-nowrap app-no-drag shadow-sm cursor-pointer"
           title="Launch Ultra-Compact Always-On-Top Mini HUD Overlay"
         >
           <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-          <span>Mini HUD</span>
+          <span className="hidden sm:inline">Mini HUD</span>
         </button>
 
         {/* Quick Action Buttons */}
@@ -114,7 +114,7 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
 
         <button
           onClick={() => { sound.playTacticalClick(); onOpenAddAccount(); }}
-          className="h-7 flex items-center gap-1.5 px-2.5 bg-val-red/90 hover:bg-val-red text-white text-xs font-medium rounded transition-all shadow-sm shadow-val-red/30 active:scale-95 shrink-0 whitespace-nowrap app-no-drag cursor-pointer"
+          className="h-7 flex items-center gap-1.5 px-2 sm:px-2.5 bg-val-red/90 hover:bg-val-red text-white text-xs font-medium rounded transition-all shadow-sm shadow-val-red/30 active:scale-95 shrink-0 whitespace-nowrap app-no-drag cursor-pointer"
           title="Add single account (Ctrl+N)"
         >
           <UserPlus className="w-3.5 h-3.5 shrink-0" />
@@ -125,7 +125,7 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
 
         <button
           onClick={() => { sound.playTacticalClick(); onOpenBulkImport(); }}
-          className="h-7 flex items-center gap-1.5 px-2.5 bg-val-card hover:bg-val-cardHover border border-val-border text-val-light text-xs font-medium rounded transition-all active:scale-95 shrink-0 whitespace-nowrap app-no-drag cursor-pointer"
+          className="h-7 flex items-center gap-1.5 px-2 sm:px-2.5 bg-val-card hover:bg-val-cardHover border border-val-border text-val-light text-xs font-medium rounded transition-all active:scale-95 shrink-0 whitespace-nowrap app-no-drag cursor-pointer"
           title="Bulk import from Discord / clipboard list (Ctrl+B)"
         >
           <ClipboardList className="w-3.5 h-3.5 shrink-0" />

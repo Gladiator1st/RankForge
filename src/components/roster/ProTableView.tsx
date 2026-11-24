@@ -598,9 +598,9 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
   return (
     <div className="flex-1 flex flex-col min-h-0 px-4 pb-4">
       {/* Top Controls Bar */}
-      <div className="relative z-20 flex items-center justify-between gap-2 mb-3 shrink-0 min-w-0">
+      <div className="relative z-20 flex flex-wrap items-center justify-between gap-2 mb-2.5 shrink-0 min-w-0">
         {/* Left Side: Search Bar, Smart Rotate & Columns Visibility */}
-        <div className="flex items-center gap-2 shrink min-w-0">
+        <div className="flex items-center gap-2 shrink min-w-0 flex-wrap sm:flex-nowrap">
           {/* Stable-width Search Bar */}
           <div className="relative w-40 sm:w-48 lg:w-56 min-w-[130px] shrink">
             <Search className="w-3.5 h-3.5 text-val-dim absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -744,13 +744,13 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
           </div>
         </div>
 
-        {/* Right Side: Solo Filter Tabs & Tier Badge */}
+        {/* Right Side: Solo Filter Tabs */}
         <div className="flex items-center gap-1.5 shrink-0">
           {/* Segmented Filter Control */}
           <div className="flex items-center p-0.5 bg-[#080C14]/90 rounded-lg border border-[#162234] text-xs backdrop-blur-md">
             <button
               onClick={() => { sound.playTacticalClick(); setSoloFilter('all'); }}
-              className={`px-2.5 py-1 rounded-md transition-all font-display uppercase tracking-wider text-[11px] ${
+              className={`px-2 sm:px-2.5 py-1 rounded-md transition-all font-display uppercase tracking-wider text-[10px] sm:text-[11px] ${
                 soloFilter === 'all'
                   ? 'bg-[#131F30] text-cyan-300 border border-cyan-500/30 font-bold shadow-sm'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
@@ -760,7 +760,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
             </button>
             <button
               onClick={() => { sound.playTacticalClick(); setSoloFilter('ready'); }}
-              className={`px-2.5 py-1 rounded-md transition-all font-display uppercase tracking-wider text-[11px] flex items-center gap-1 ${
+              className={`px-2 sm:px-2.5 py-1 rounded-md transition-all font-display uppercase tracking-wider text-[10px] sm:text-[11px] flex items-center gap-1 ${
                 soloFilter === 'ready'
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold shadow-sm'
                   : 'text-slate-400 hover:text-amber-300 hover:bg-slate-800/40'
@@ -772,7 +772,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
             </button>
             <button
               onClick={() => { sound.playTacticalClick(); setSoloFilter('cooldown'); }}
-              className={`px-2.5 py-1 rounded-md transition-all font-display uppercase tracking-wider text-[11px] flex items-center gap-1 ${
+              className={`px-2 sm:px-2.5 py-1 rounded-md transition-all font-display uppercase tracking-wider text-[10px] sm:text-[11px] flex items-center gap-1 ${
                 soloFilter === 'cooldown'
                   ? 'bg-[#00F5D4]/15 text-[#00F5D4] border border-[#00F5D4]/40 font-bold shadow-sm'
                   : 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/40'
@@ -784,7 +784,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
             </button>
             <button
               onClick={() => { sound.playTacticalClick(); setSoloFilter('finished'); }}
-              className={`px-2.5 py-1 rounded-md transition-all font-display uppercase tracking-wider text-[11px] flex items-center gap-1 ${
+              className={`px-2 sm:px-2.5 py-1 rounded-md transition-all font-display uppercase tracking-wider text-[10px] sm:text-[11px] flex items-center gap-1 ${
                 soloFilter === 'finished'
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold shadow-sm'
                   : 'text-slate-400 hover:text-emerald-300 hover:bg-slate-800/40'
@@ -859,9 +859,10 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
       )}
 
       {/* Table with virtualized body */}
-      <div className="flex-1 overflow-hidden rounded-2xl border border-[#1E2C3D] bg-[#0A0E17]/95 shadow-2xl flex flex-col min-h-0 relative backdrop-blur-md">
-        {/* Sticky Header */}
-        <div className="shrink-0 border-b border-[#1E2C3D] bg-[#080B10]/95 backdrop-blur-md z-10 overflow-hidden">
+      <div className="flex-1 overflow-x-auto overflow-y-hidden rounded-2xl border border-[#1E2C3D] bg-[#0A0E17]/95 shadow-2xl flex flex-col min-h-0 relative backdrop-blur-md">
+        <div className="min-w-[650px] flex-1 flex flex-col min-h-0">
+          {/* Sticky Header */}
+          <div className="shrink-0 border-b border-[#1E2C3D] bg-[#080B10]/95 backdrop-blur-md z-10 overflow-hidden">
           <table className="w-full text-left text-xs border-collapse table-fixed">
             <thead>
               <tr className="border-b border-[#1E2C3D]/60">
@@ -896,7 +897,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                           onDragLeave={() => handleColDragLeave('account')}
                           onDrop={(e) => handleColDrop('account', e)}
                           onDragEnd={handleColDragEnd}
-                          className={`min-w-[180px] py-3 px-3 font-display uppercase tracking-wider text-[11px] font-bold cursor-grab active:cursor-grabbing hover:text-white select-none relative group/th transition-all duration-150 ${
+                          className={`min-w-[130px] py-3 px-3 font-display uppercase tracking-wider text-[11px] font-bold cursor-grab active:cursor-grabbing hover:text-white select-none relative group/th transition-all duration-150 ${
                             sortField === 'username' ? 'text-[#00F5D4]' : 'text-val-dim'
                           } ${isDragged ? 'opacity-30 bg-cyan-500/10' : ''}`}
                           onClick={() => handleSort('username')}
@@ -923,7 +924,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                           onDragLeave={() => handleColDragLeave('password')}
                           onDrop={(e) => handleColDrop('password', e)}
                           onDragEnd={handleColDragEnd}
-                          className={`min-w-[95px] py-3 px-3 font-display uppercase tracking-wider text-[11px] font-bold text-val-dim select-none cursor-grab active:cursor-grabbing hover:text-slate-200 relative group/th transition-all duration-150 ${
+                          className={`min-w-[70px] py-3 px-2.5 font-display uppercase tracking-wider text-[11px] font-bold text-val-dim select-none cursor-grab active:cursor-grabbing hover:text-slate-200 relative group/th transition-all duration-150 ${
                             isDragged ? 'opacity-30 bg-cyan-500/10' : ''
                           }`}
                           title="Drag to rearrange column"
@@ -948,7 +949,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                           onDragLeave={() => handleColDragLeave('status')}
                           onDrop={(e) => handleColDrop('status', e)}
                           onDragEnd={handleColDragEnd}
-                          className={`min-w-[95px] py-3 px-3 font-display uppercase tracking-wider text-[11px] font-bold text-val-dim select-none cursor-grab active:cursor-grabbing hover:text-slate-200 relative group/th transition-all duration-150 ${
+                          className={`min-w-[70px] py-3 px-2.5 font-display uppercase tracking-wider text-[11px] font-bold text-val-dim select-none cursor-grab active:cursor-grabbing hover:text-slate-200 relative group/th transition-all duration-150 ${
                             isDragged ? 'opacity-30 bg-cyan-500/10' : ''
                           }`}
                           title="Drag to rearrange column"
@@ -973,7 +974,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                           onDragLeave={() => handleColDragLeave('level')}
                           onDrop={(e) => handleColDrop('level', e)}
                           onDragEnd={handleColDragEnd}
-                          className={`min-w-[140px] py-3 px-3 font-display uppercase tracking-wider text-[11px] font-bold cursor-grab active:cursor-grabbing hover:text-white select-none relative group/th transition-all duration-150 ${
+                          className={`min-w-[105px] py-3 px-2.5 font-display uppercase tracking-wider text-[11px] font-bold cursor-grab active:cursor-grabbing hover:text-white select-none relative group/th transition-all duration-150 ${
                             sortField === 'level' ? 'text-[#00F5D4]' : 'text-val-dim'
                           } ${isDragged ? 'opacity-30 bg-cyan-500/10' : ''}`}
                           onClick={() => handleSort('level')}
@@ -1000,7 +1001,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                           onDragLeave={() => handleColDragLeave('first_win')}
                           onDrop={(e) => handleColDrop('first_win', e)}
                           onDragEnd={handleColDragEnd}
-                          className={`min-w-[190px] py-3 px-3.5 font-display uppercase tracking-wider text-[11px] font-bold cursor-grab active:cursor-grabbing hover:text-white select-none relative group/th transition-all duration-150 ${
+                          className={`min-w-[125px] py-3 px-2.5 font-display uppercase tracking-wider text-[11px] font-bold cursor-grab active:cursor-grabbing hover:text-white select-none relative group/th transition-all duration-150 ${
                             sortField === 'first_win' ? 'text-[#00F5D4]' : 'text-val-dim'
                           } ${isDragged ? 'opacity-30 bg-cyan-500/10' : ''}`}
                           onClick={() => handleSort('first_win')}
@@ -1021,7 +1022,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                   }
                 })}
 
-                <th className="w-[130px] min-w-[130px] max-w-[130px] py-3 px-3 font-display uppercase tracking-wider text-[11px] font-bold text-val-dim text-right select-none pr-4">Actions</th>
+                <th className="w-[110px] min-w-[110px] max-w-[110px] py-3 px-2 font-display uppercase tracking-wider text-[11px] font-bold text-val-dim text-right select-none pr-3">Actions</th>
               </tr>
             </thead>
           </table>
@@ -1192,7 +1193,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                           switch (colKey) {
                             case 'account':
                               return (
-                                <td key="account" style={{ width: colWidths['account'] }} className="min-w-[180px] py-2.5 px-3 overflow-hidden">
+                                <td key="account" style={{ width: colWidths['account'] }} className="min-w-[130px] py-2.5 px-3 overflow-hidden">
                                   <div className="flex items-center gap-1.5 flex-nowrap">
                                     {editingId === account.id ? (
                                       <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
@@ -1271,7 +1272,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
 
                             case 'password':
                               return (
-                                <td key="password" style={{ width: colWidths['password'] }} className="min-w-[95px] py-2.5 px-3 whitespace-nowrap">
+                                <td key="password" style={{ width: colWidths['password'] }} className="min-w-[70px] py-2.5 px-2.5 whitespace-nowrap">
                                   {editingPasswordId === account.id ? (
                                     <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                                       <input
@@ -1337,7 +1338,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
 
                             case 'status':
                               return (
-                                <td key="status" style={{ width: colWidths['status'] }} className="min-w-[95px] py-2.5 px-3 whitespace-nowrap overflow-hidden">
+                                <td key="status" style={{ width: colWidths['status'] }} className="min-w-[70px] py-2.5 px-2.5 whitespace-nowrap overflow-hidden">
                                   <div className="flex items-center gap-1.5">
                                     <button
                                       type="button"
@@ -1375,12 +1376,12 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
 
                             case 'level':
                               return (
-                                <td key="level" style={{ width: colWidths['level'] }} className="min-w-[140px] py-2.5 px-3 whitespace-nowrap">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-mono font-bold text-white text-xs w-10">
+                                <td key="level" style={{ width: colWidths['level'] }} className="min-w-[105px] py-2.5 px-2.5 whitespace-nowrap">
+                                  <div className="flex items-center gap-1.5 sm:gap-2">
+                                    <span className="font-mono font-bold text-white text-xs w-9 sm:w-10">
                                       {account.decimal_level ? account.decimal_level.toFixed(2) : account.level}
                                     </span>
-                                    <div className="w-24 sm:w-28 h-2 bg-[#080B10] rounded-full overflow-hidden border border-[#1E2C3D] shadow-inner">
+                                    <div className="w-16 sm:w-24 h-2 bg-[#080B10] rounded-full overflow-hidden border border-[#1E2C3D] shadow-inner">
                                       <div
                                         className={`h-full rounded-full transition-all duration-300 ${
                                           isLevel20
@@ -1396,9 +1397,9 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
 
                             case 'first_win':
                               return (
-                                <td key="first_win" style={{ width: colWidths['first_win'] }} className="min-w-[190px] py-2.5 px-3.5 whitespace-nowrap overflow-hidden">
+                                <td key="first_win" style={{ width: colWidths['first_win'] }} className="min-w-[125px] py-2.5 px-2.5 whitespace-nowrap overflow-hidden">
                                   <span
-                                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-mono font-semibold tabular-nums ${
+                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-mono font-semibold tabular-nums ${
                                       firstWinReady
                                         ? 'bg-amber-500/15 text-amber-300 border border-amber-500/35 shadow-[0_0_8px_rgba(245,158,11,0.15)] animate-pulse'
                                         : 'bg-[#0C121D] text-val-dim border border-[#1E2C3D]'
@@ -1416,7 +1417,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                         })}
 
                         {/* Actions */}
-                        <td className="w-[130px] min-w-[130px] max-w-[130px] py-2.5 px-3 text-right whitespace-nowrap pr-4">
+                        <td className="w-[110px] min-w-[110px] max-w-[110px] py-2.5 px-2 text-right whitespace-nowrap pr-3">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={(e) => {
@@ -1477,6 +1478,7 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
           )}
         </div>
       </div>
+    </div>
 
       {/* Right-Click Context Menu */}
       {contextMenu && (

@@ -373,8 +373,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-val-card border border-val-border rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col h-[560px]">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in">
+      <div className="bg-val-card border border-val-border rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col h-[90vh] max-h-[560px]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-val-border bg-val-bg/80 shrink-0">
           <div className="flex items-center gap-2.5">

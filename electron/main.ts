@@ -92,6 +92,8 @@ function createWindow() {
   const settings = vault.getSettings();
   const DEFAULT_WIDTH = 1350;
   const DEFAULT_HEIGHT = 720;
+  const MIN_WIDTH = 680;
+  const MIN_HEIGHT = 450;
   let width = DEFAULT_WIDTH;
   let height = DEFAULT_HEIGHT;
 
@@ -107,8 +109,8 @@ function createWindow() {
     title: 'RankForge',
     width,
     height,
-    minWidth: DEFAULT_WIDTH,
-    minHeight: DEFAULT_HEIGHT,
+    minWidth: MIN_WIDTH,
+    minHeight: MIN_HEIGHT,
     frame: false,
     backgroundColor: '#080B10',
     show: false,
@@ -120,7 +122,7 @@ function createWindow() {
     },
   });
 
-  mainWindow.setMinimumSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+  mainWindow.setMinimumSize(MIN_WIDTH, MIN_HEIGHT);
 
   const isDev = !app.isPackaged && (process.env.NODE_ENV === 'development' || process.argv.includes('--dev'));
   const isStartHidden = process.argv.includes('--minimized') || process.argv.includes('--hidden');
@@ -751,8 +753,8 @@ function setupIpcHandlers() {
         defaultH = 960;
       }
 
-      const targetW = Math.max(preHudBounds?.width || defaultW, defaultW);
-      const targetH = Math.max(preHudBounds?.height || defaultH, defaultH);
+      const targetW = Math.max(preHudBounds?.width || defaultW, 680);
+      const targetH = Math.max(preHudBounds?.height || defaultH, 450);
       const currentBounds = mainWindow.getBounds();
       const targetX = preHudBounds?.x !== undefined ? preHudBounds.x : currentBounds.x;
       const targetY = preHudBounds?.y !== undefined ? preHudBounds.y : currentBounds.y;
@@ -766,7 +768,7 @@ function setupIpcHandlers() {
     }
 
     wasMaximizedBeforeHud = false;
-    mainWindow.setMinimumSize(1350, 720);
+    mainWindow.setMinimumSize(680, 450);
     return true;
   });
 
