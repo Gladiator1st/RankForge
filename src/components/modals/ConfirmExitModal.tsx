@@ -63,7 +63,7 @@ export const ConfirmExitModal: React.FC<ConfirmExitModalProps> = ({
 
         {/* Explanatory Subtitle */}
         <p className="text-xs text-val-muted leading-relaxed mb-5">
-          You can keep background match detection, level progress, and Discord alerts active in the system tray, or shut down the application completely.
+          You can keep background match detection and level progress active in the system tray, or shut down the application completely.
         </p>
 
         {/* Action Options Grid */}

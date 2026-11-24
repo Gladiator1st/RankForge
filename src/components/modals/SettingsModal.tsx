@@ -3,10 +3,8 @@ import {
   X, 
   Settings, 
   Volume2, 
-  Bell, 
   Shield, 
   Save, 
-  Send, 
   Download, 
   Upload, 
   Check, 
@@ -36,7 +34,7 @@ import {
 import { AppSettings, Account } from '../../types';
 import { sound } from '../../services/soundEffects';
 
-export type TabType = 'general' | 'hud' | 'personal' | 'discord' | 'vault' | 'about';
+export type TabType = 'general' | 'hud' | 'personal' | 'vault' | 'about';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -242,32 +240,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     showStatus('success', `Reset ${type === 'victory' ? 'victory' : 'defeat'} audio to default!`);
   };
 
-  const handleTestDiscordPing = async () => {
-    if (!formData.discord_webhook_url) {
-      showStatus('error', 'Please enter a Discord Webhook URL first.');
-      return;
-    }
-    sound.playTacticalClick();
-    const res = await window.rfrApi?.sendDiscordTestPing(formData.discord_webhook_url);
-    if (res?.success) {
-      sound.playSuccessDing();
-      showStatus('success', 'Test ping sent to Discord channel!');
-    } else {
-      showStatus('error', res?.message || 'Failed to ping Discord.');
-    }
-  };
-
-  const handleSendDiscordDigest = async () => {
-    sound.playTacticalClick();
-    const res = await window.rfrApi?.sendDiscordDigest(accounts);
-    if (res?.success) {
-      sound.playSuccessDing();
-      showStatus('success', 'Roster Radar digest posted to Discord!');
-    } else {
-      showStatus('error', res?.message || 'Failed to send digest.');
-    }
-  };
-
 
   const handleExportBackup = async () => {
     if (!backupPassword || backupPassword.length < 4) {
@@ -459,16 +431,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   {formData.ignored_accounts?.length}
                 </span>
               )}
-            </button>
-
-            <button
-              onClick={() => { sound.playTacticalClick(); setActiveTab('discord'); }}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all text-left ${
-                activeTab === 'discord' ? 'bg-val-card border border-val-border text-white shadow-sm' : 'text-val-muted hover:text-white'
-              }`}
-            >
-              <Bell className="w-4 h-4 text-[#5865F2]" />
-              <span>Discord Dashboard</span>
             </button>
 
             <button
@@ -1411,72 +1373,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     ))}
                   </div>
                 )}
-              </div>
-            )}
-
-            {/* TAB 2: Discord Webhooks */}
-            {activeTab === 'discord' && (
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-bold text-xs text-white uppercase tracking-wider mb-1">
-                    Discord Webhook Automation
-                  </h4>
-                  <p className="text-xs text-val-muted leading-relaxed mb-3">
-                    Send real-time match completions, Level 20 deliverable milestone embeds, and roster digests to your server.
-                  </p>
-
-                  <label className="block text-xs font-semibold text-val-muted uppercase mb-1.5">
-                    Discord Webhook URL
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://discord.com/api/webhooks/..."
-                    value={formData.discord_webhook_url}
-                    onChange={(e) => setFormData({ ...formData, discord_webhook_url: e.target.value })}
-                    className="w-full px-3 py-2 bg-val-bg border border-val-border focus:border-val-red rounded-lg text-xs text-white font-mono focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-2 pt-2">
-                  <label className="flex items-center gap-2 text-xs font-medium text-val-light cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.discord_notify_level_20}
-                      onChange={(e) => setFormData({ ...formData, discord_notify_level_20: e.target.checked })}
-                      className="rounded bg-val-bg border-val-border text-val-red"
-                    />
-                    <span>Notify immediately when any account hits Level 20 (Ready for Rank)</span>
-                  </label>
-
-                  <label className="flex items-center gap-2 text-xs font-medium text-val-light cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.discord_notify_match_finish}
-                      onChange={(e) => setFormData({ ...formData, discord_notify_match_finish: e.target.checked })}
-                      className="rounded bg-val-bg border-val-border text-val-red"
-                    />
-                    <span>Notify on Valorant match completion with gained XP</span>
-                  </label>
-                </div>
-
-                <div className="pt-3 border-t border-val-border flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleTestDiscordPing}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-val-bg border border-val-border text-xs text-val-light hover:text-white transition-colors"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Send Test Ping</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleSendDiscordDigest}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#5865F2]/20 border border-[#5865F2]/40 text-xs text-white hover:bg-[#5865F2]/30 transition-colors"
-                  >
-                    <span>📋 Post Roster Radar Digest</span>
-                  </button>
-                </div>
               </div>
             )}
 
