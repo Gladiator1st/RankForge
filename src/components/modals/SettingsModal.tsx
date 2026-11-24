@@ -67,7 +67,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [backupPassword, setBackupPassword] = useState('');
   const [newIgnoreInput, setNewIgnoreInput] = useState('');
-  const [isUpdatingLiveDashboard, setIsUpdatingLiveDashboard] = useState(false);
 
   // Auto-Update & Version states
   const [appVersion, setAppVersion] = useState<string>('1.0.0');
@@ -269,41 +268,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }
   };
 
-
-  const handleUpdateLiveDiscordDashboard = async () => {
-    if (!formData.discord_webhook_url) {
-      showStatus('error', 'Please enter a Discord Webhook URL first.');
-      return;
-    }
-    if (!window.rfrApi?.sendDiscordLiveDashboard) {
-      showStatus('error', 'Discord service not available in API bridge.');
-      return;
-    }
-    sound.playTacticalClick();
-    setIsUpdatingLiveDashboard(true);
-    try {
-      const res = await window.rfrApi.sendDiscordLiveDashboard(accounts);
-      if (res?.success) {
-        sound.playSuccessDing();
-        if (res.messageId) {
-          setFormData((prev) => ({ ...prev, discord_dashboard_message_id: res.messageId }));
-          onSaveSettings({ discord_dashboard_message_id: res.messageId });
-        }
-        showStatus('success', 'Live Persistent Discord Dashboard updated (Single Message edited)!');
-      } else {
-        showStatus('error', res?.message || 'Failed to update live dashboard.');
-      }
-    } finally {
-      setIsUpdatingLiveDashboard(false);
-    }
-  };
-
-  const handleResetDiscordMessageId = () => {
-    sound.playTacticalClick();
-    setFormData((prev) => ({ ...prev, discord_dashboard_message_id: undefined }));
-    onSaveSettings({ discord_dashboard_message_id: undefined });
-    showStatus('success', 'Reset Dashboard Message ID. Next publish will create a fresh message.');
-  };
 
   const handleExportBackup = async () => {
     if (!backupPassword || backupPassword.length < 4) {
@@ -1493,56 +1457,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     />
                     <span>Notify on Valorant match completion with gained XP</span>
                   </label>
-                </div>
-
-                {/* Live Persistent Dashboard (Single-Message Edit) */}
-                <div className="pt-3 border-t border-val-border space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                        Live Persistent Dashboard (Single Message Auto-Edit)
-                      </span>
-                      <p className="text-[11px] text-val-muted mt-0.5 leading-relaxed">
-                        Instead of spamming new messages, RFR Tracker edits <strong>one single master dashboard embed</strong> in your Discord channel in real-time.
-                      </p>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer shrink-0 ml-3">
-                      <input
-                        type="checkbox"
-                        checked={formData.discord_live_dashboard_enabled}
-                        onChange={(e) => setFormData({ ...formData, discord_live_dashboard_enabled: e.target.checked })}
-                        className="rounded bg-val-bg border-val-border text-[#5865F2]"
-                      />
-                    </label>
-                  </div>
-
-                  {formData.discord_dashboard_message_id && (
-                    <div className="flex items-center justify-between p-2 rounded bg-val-bg border border-val-border text-[11px] font-mono">
-                      <span className="text-val-muted">
-                        Persistent Message ID: <span className="text-cyan-400 font-bold">{formData.discord_dashboard_message_id}</span>
-                      </span>
-                      <button
-                        type="button"
-                        onClick={handleResetDiscordMessageId}
-                        className="text-[10px] text-val-muted hover:text-rose-400 underline transition-colors"
-                      >
-                        Reset ID
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="pt-1">
-                    <button
-                      type="button"
-                      disabled={isUpdatingLiveDashboard}
-                      onClick={handleUpdateLiveDiscordDashboard}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#5865F2] to-indigo-600 hover:from-[#4752c4] hover:to-indigo-500 text-xs font-bold text-white transition-all shadow-md shadow-[#5865F2]/20 active:scale-98"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${isUpdatingLiveDashboard ? 'animate-spin' : ''}`} />
-                      <span>{isUpdatingLiveDashboard ? 'Updating Live Dashboard...' : '🚀 Create / Update Live Discord Dashboard Now'}</span>
-                    </button>
-                  </div>
                 </div>
 
                 <div className="pt-3 border-t border-val-border flex items-center gap-2">

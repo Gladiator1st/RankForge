@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { X, ClipboardList, Info, Trash2 } from 'lucide-react';
+import { X, ClipboardList, Trash2 } from 'lucide-react';
 import { sound } from '../../services/soundEffects';
 
 interface BulkImportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onImport: (text: string, defaultRegion: string) => void;
+  onImport: (text: string) => void;
 }
 
 export const BulkImportModal: React.FC<BulkImportModalProps> = ({
@@ -14,7 +14,6 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
   onImport,
 }) => {
   const [inputText, setInputText] = useState('');
-  const [defaultRegion, setDefaultRegion] = useState('na');
   const [showFormatGuide, setShowFormatGuide] = useState(false);
 
   // Live parsing preview
@@ -35,20 +34,20 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
         return {
           username: parts[0].trim(),
           password: parts[1].trim(),
-          region: parts[2] ? parts[2].trim().toLowerCase() : defaultRegion,
+          region: parts[2] ? parts[2].trim().toLowerCase() : '',
           valid: true,
         };
       } else if (parts.length === 1 && parts[0].trim()) {
         return {
           username: parts[0].trim(),
           password: '',
-          region: defaultRegion,
+          region: '',
           valid: true,
         };
       }
-      return { username: line, password: '', region: defaultRegion, valid: false };
+      return { username: line, password: '', region: '', valid: false };
     });
-  }, [inputText, defaultRegion]);
+  }, [inputText]);
 
   const validCount = parsedPreview.filter((p) => p.valid).length;
 
@@ -62,14 +61,14 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
     if (!inputText.trim()) return;
 
     sound.playSuccessDing();
-    onImport(inputText, defaultRegion);
+    onImport(inputText);
     onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-fade-in select-none">
       <div className="bg-val-card border border-val-border rounded-xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="shrink-0 flex items-center justify-between px-5 py-3.5 border-b border-val-border bg-val-bg/95">
@@ -81,7 +80,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
           </div>
           <button
             onClick={() => { sound.playTacticalClick(); onClose(); }}
-            className="text-val-muted hover:text-white transition-colors"
+            className="text-val-muted hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -98,16 +97,15 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
                 <button
                   type="button"
                   onClick={() => { sound.playTacticalClick(); setShowFormatGuide(!showFormatGuide); }}
-                  className="text-[11px] text-val-gold hover:underline flex items-center gap-1"
+                  className="text-[11px] text-val-gold hover:text-amber-300 underline transition-colors cursor-pointer"
                 >
-                  <Info className="w-3 h-3" />
-                  <span>Supported Formats</span>
+                  {showFormatGuide ? 'Hide Format Guide' : 'Format Guide'}
                 </button>
-                {inputText && (
+                {inputText.trim() && (
                   <button
                     type="button"
                     onClick={handleClear}
-                    className="text-[11px] text-val-muted hover:text-val-red flex items-center gap-1 transition-colors"
+                    className="text-[11px] text-val-muted hover:text-val-red flex items-center gap-1 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
                     <span>Clear</span>
@@ -122,18 +120,19 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
                 <p className="font-semibold text-val-gold">Paste multiple accounts (one per line):</p>
                 <div className="font-mono text-[11px] text-val-muted space-y-1 bg-val-surface p-2 rounded">
                   <p>username:password</p>
-                  <p>username:password:region <span className="text-val-dim">(e.g. user:pass:na)</span></p>
+                  <p>username:password:region <span className="text-val-dim">(optional)</span></p>
                   <p>username | password</p>
                   <p>username<span className="text-val-dim"> (password optional)</span></p>
                 </div>
+                <p className="text-[10px] text-val-dim">Region is automatically detected when an account logs into Riot Client.</p>
               </div>
             )}
 
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={`myuser1:P@ssword123\nmyuser2:P@ssword123:na\nmyuser3:P@ssword123:eu`}
-              rows={7}
+              placeholder={`myuser1:P@ssword123\nmyuser2:P@ssword123\nmyuser3:P@ssword123`}
+              rows={8}
               className="w-full px-3 py-2.5 bg-val-bg border border-val-border focus:border-val-red rounded-lg text-xs text-white font-mono focus:outline-none resize-none leading-relaxed placeholder:text-val-dim/50"
               autoFocus
             />
@@ -150,30 +149,9 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
                     )}
                   </>
                 ) : (
-                  'Paste your accounts from Discord, text, or spreadsheets'
+                  'Paste accounts in user:pass format (one per line)'
                 )}
               </span>
-            </div>
-          </div>
-
-          {/* Region and Settings */}
-          <div className="space-y-3">
-            <div className="space-y-1">
-              <label className="block text-xs font-semibold text-val-muted uppercase">
-                Default Region (if not specified per line)
-              </label>
-              <select
-                value={defaultRegion}
-                onChange={(e) => setDefaultRegion(e.target.value)}
-                className="w-full px-3 py-2 bg-val-bg border border-val-border focus:border-val-red rounded-lg text-xs text-white focus:outline-none"
-              >
-                <option value="na">NA (North America)</option>
-                <option value="eu">EU (Europe)</option>
-                <option value="ap">AP (Asia-Pacific)</option>
-                <option value="kr">KR (Korea)</option>
-                <option value="latam">LATAM (Latin America)</option>
-                <option value="br">BR (Brazil)</option>
-              </select>
             </div>
           </div>
 
@@ -199,12 +177,14 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
                       {acc.password ? (
                         <span className="text-val-dim">••••••••</span>
                       ) : (
-                        <span className="text-amber-400 text-[10px]">No pass</span>
+                        <span className="text-val-dim text-[10px]">(No password)</span>
                       )}
                     </div>
-                    <span className="text-[10px] uppercase font-bold text-val-gold px-1.5 py-0.5 rounded bg-val-surface border border-val-border shrink-0">
-                      {acc.region}
-                    </span>
+                    {acc.region && (
+                      <span className="px-1.5 py-0.5 rounded text-[10px] uppercase bg-val-border text-val-muted shrink-0">
+                        {acc.region}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -213,22 +193,27 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
         </form>
 
         {/* Footer */}
-        <div className="shrink-0 px-5 py-3 border-t border-val-border bg-val-bg/95 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => { sound.playTacticalClick(); onClose(); }}
-            className="px-3 py-2 text-xs text-val-muted hover:text-white transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            form="bulk-import-form"
-            type="submit"
-            disabled={validCount === 0}
-            className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-val-red hover:bg-val-redHover text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-val-red/30 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <span>Import {validCount > 0 ? `${validCount} Accounts` : 'Accounts'}</span>
-          </button>
+        <div className="shrink-0 flex items-center justify-between px-5 py-3.5 border-t border-val-border bg-val-bg/95">
+          <span className="text-xs text-val-muted">
+            {validCount > 0 ? `${validCount} ready to import` : 'No accounts detected'}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => { sound.playTacticalClick(); onClose(); }}
+              className="px-4 py-1.5 rounded-lg text-xs text-val-muted hover:text-white transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="bulk-import-form"
+              disabled={validCount === 0}
+              className="px-5 py-1.5 rounded-lg bg-val-red hover:bg-val-redHover text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-val-red/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-95"
+            >
+              Import {validCount > 0 ? `(${validCount})` : ''}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -69,7 +69,6 @@ export const App: React.FC = () => {
     discord_webhook_url: '',
     discord_notify_level_20: true,
     discord_notify_match_finish: true,
-    discord_live_dashboard_enabled: false,
     user_role: 'solo',
     license_tier: 'solo_pro',
   });
@@ -529,10 +528,10 @@ export const App: React.FC = () => {
     await window.rfrApi?.launchAccount(accountId);
   }, [accounts, handleSaveAccount]);
 
-  const handleBulkImport = useCallback(async (text: string, defaultRegion = 'na') => {
+  const handleBulkImport = useCallback(async (text: string) => {
     sound.playSuccessDing();
     try {
-      const imported = await window.rfrApi?.bulkImportAccounts(text, defaultRegion);
+      const imported = await window.rfrApi?.bulkImportAccounts(text);
       if (imported && imported.length > 0) {
         const freshAccounts = await window.rfrApi?.getAccounts();
         if (freshAccounts) {
@@ -592,6 +591,23 @@ export const App: React.FC = () => {
     window.rfrApi?.minimizeToTray?.() || window.rfrApi?.close?.();
   }, [handleSaveSettings]);
 
+  if (viewMode === 'hud') {
+    return (
+      <div className="h-screen w-screen bg-transparent overflow-hidden">
+        <MiniHudOverlay
+          accounts={accounts}
+          riotStatus={riotStatus}
+          cooldownMap={cooldownMap}
+          onLaunchAccount={(acc) => handleLaunchAccount(acc.id)}
+          onExitHud={() => handleViewModeChange('table')}
+          sessionElapsed={sessionElapsed}
+          settings={settings}
+          onUpdateSettings={handleSaveSettings}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full w-full flex flex-col bg-val-bg text-val-light overflow-hidden font-sans">
       {/* 1. Custom Frameless Esports TitleBar */}
@@ -615,58 +631,46 @@ export const App: React.FC = () => {
       {/* Seamless In-App Auto-Update Banner */}
       <InAppUpdaterBanner />
 
-      {viewMode === 'hud' ? (
-        <MiniHudOverlay
-          accounts={accounts}
-          activeAccount={activeRosterAccount}
-          riotStatus={riotStatus}
-          cooldownMap={cooldownMap}
-          sessionElapsed={sessionElapsed}
-          settings={settings}
-          onLaunchAccount={handleLaunchAccount}
-          onExitHud={() => handleViewModeChange('table')}
-        />
-      ) : (
-        <SoloView
-          accounts={accounts}
-          displayedAccounts={displayedAccounts}
-          cooldownMap={cooldownMap}
-          settings={settings}
-          kpiStats={kpiStats}
-          viewMode={viewMode}
-          showArchive={showArchive}
-          activeRosterAccount={activeRosterAccount}
-          riotStatus={riotStatus}
-          grindEtaAccount={activeRosterAccount}
-          onLaunchAccount={handleLaunchAccount}
-          onDeleteRequest={(id) => {
-            setDeleteTargetIds([id]);
-            if (settings.confirm_delete_account) {
-              setActiveModal('confirm_delete');
-            } else {
-              handleDeleteAccount(id);
-            }
-          }}
-          onBatchDeleteRequest={(ids) => {
-            setDeleteTargetIds(ids);
-            if (settings.confirm_delete_account) {
-              setActiveModal('confirm_delete');
-            } else {
-              handleBatchDelete(ids);
-            }
-          }}
-          onOpenHandover={(account) => {
-            setSelectedAccount(account);
-            setActiveModal('handover');
-          }}
-          onOpenStats={handleOpenStats}
-          onRenameAccount={handleRenameAccount}
-          onUpdateAccount={handleUpdateAccount}
-          onRestoreAccount={handleRestoreAccount}
-          onSaveSettings={handleSaveSettings}
-          onOpenAddAccount={() => { sound.playTacticalClick(); setActiveModal('add_account'); }}
-        />
-      )}
+      {/* 2. Solo Grinder Main View */}
+      <SoloView
+        accounts={accounts}
+        displayedAccounts={displayedAccounts}
+        cooldownMap={cooldownMap}
+        settings={settings}
+        kpiStats={kpiStats}
+        viewMode={viewMode}
+        showArchive={showArchive}
+        activeRosterAccount={activeRosterAccount}
+        riotStatus={riotStatus}
+        grindEtaAccount={activeRosterAccount}
+        onLaunchAccount={handleLaunchAccount}
+        onDeleteRequest={(id) => {
+          setDeleteTargetIds([id]);
+          if (settings.confirm_delete_account) {
+            setActiveModal('confirm_delete');
+          } else {
+            handleDeleteAccount(id);
+          }
+        }}
+        onBatchDeleteRequest={(ids) => {
+          setDeleteTargetIds(ids);
+          if (settings.confirm_delete_account) {
+            setActiveModal('confirm_delete');
+          } else {
+            handleBatchDelete(ids);
+          }
+        }}
+        onOpenHandover={(account) => {
+          setSelectedAccount(account);
+          setActiveModal('handover');
+        }}
+        onOpenStats={handleOpenStats}
+        onRenameAccount={handleRenameAccount}
+        onUpdateAccount={handleUpdateAccount}
+        onRestoreAccount={handleRestoreAccount}
+        onSaveSettings={handleSaveSettings}
+        onOpenAddAccount={() => { sound.playTacticalClick(); setActiveModal('add_account'); }}
+      />
 
       {/* ── Modals ── */}
       <AddAccountModal

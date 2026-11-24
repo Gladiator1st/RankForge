@@ -17,7 +17,6 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({
 }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [region, setRegion] = useState('na');
   const [level, setLevel] = useState('1');
   const [notes, setNotes] = useState('');
   const [autoDetected, setAutoDetected] = useState(false);
@@ -25,20 +24,13 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({
   if (!isOpen) return null;
 
   const handleUsernameChange = (val: string) => {
-    // Detect combo paste: user:pass or user:pass:region or user,pass or user,pass,region
+    // Detect combo paste: user:pass or user:pass:region or user,pass
     if (val.includes(':') || val.includes(',')) {
       const sep = val.includes(':') ? ':' : ',';
       const parts = val.split(sep).map((s) => s.trim());
       if (parts.length >= 2 && parts[0] && parts[1]) {
         setUsername(parts[0]);
         setPassword(parts[1]);
-        if (parts.length >= 3) {
-          const possibleReg = parts[2].toLowerCase();
-          const validRegions = ['eu', 'na', 'ap', 'kr', 'latam', 'br', 'lan', 'las', 'oce'];
-          if (validRegions.includes(possibleReg)) {
-            setRegion(possibleReg);
-          }
-        }
         sound.playSuccessDing();
         setAutoDetected(true);
         setTimeout(() => setAutoDetected(false), 4000);
@@ -59,7 +51,7 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({
     onSaveAccount({
       username: username.trim(),
       password: password.trim(),
-      region,
+      region: '', // Auto-detected when account logs in
       level: lvlNum,
       decimal_level: lvlNum,
       current_xp: 0,
@@ -85,7 +77,7 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({
           </div>
           <button
             onClick={() => { sound.playTacticalClick(); onClose(); }}
-            className="w-7 h-7 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-border transition-colors"
+            className="w-7 h-7 rounded flex items-center justify-center text-val-muted hover:text-white hover:bg-val-border transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -130,24 +122,6 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold text-val-muted uppercase">
-                Region
-              </label>
-              <select
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className="w-full px-3 py-2 bg-val-bg border border-val-border focus:border-val-red rounded-lg text-xs text-white focus:outline-none"
-              >
-                <option value="na">NA (North America)</option>
-                <option value="eu">EU (Europe)</option>
-                <option value="ap">AP (Asia-Pacific)</option>
-                <option value="kr">KR (Korea)</option>
-                <option value="latam">LATAM (Latin America)</option>
-                <option value="br">BR (Brazil)</option>
-              </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-val-muted uppercase">
                 Starting Level
               </label>
               <input
@@ -159,32 +133,32 @@ export const AddAccountModal: React.FC<AddAccountModalProps> = ({
                 className="w-full px-3 py-2 bg-val-bg border border-val-border focus:border-val-red rounded-lg text-xs text-white font-mono focus:outline-none"
               />
             </div>
-          </div>
 
-          <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-val-muted uppercase">
-              Notes / Tags <span className="text-val-dim text-[11px] normal-case">(Optional)</span>
-            </label>
-            <input
-              type="text"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g. customer #104, smurf"
-              className="w-full px-3 py-2 bg-val-bg border border-val-border focus:border-val-red rounded-lg text-xs text-white focus:outline-none"
-            />
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-val-muted uppercase">
+                Notes / Tags <span className="text-val-dim text-[11px] normal-case">(Optional)</span>
+              </label>
+              <input
+                type="text"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="e.g. smurf, alt"
+                className="w-full px-3 py-2 bg-val-bg border border-val-border focus:border-val-red rounded-lg text-xs text-white focus:outline-none"
+              />
+            </div>
           </div>
 
           <div className="pt-2 flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={() => { sound.playTacticalClick(); onClose(); }}
-              className="px-4 py-2 rounded-lg text-xs text-val-muted hover:text-white transition-colors"
+              className="px-4 py-2 rounded-lg text-xs text-val-muted hover:text-white transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-lg bg-val-red hover:bg-val-redHover text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-val-red/30 active:scale-95"
+              className="px-5 py-2 rounded-lg bg-val-red hover:bg-val-redHover text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-val-red/30 active:scale-95 cursor-pointer"
             >
               Add to Roster
             </button>

@@ -6,8 +6,7 @@ import {
   Settings, 
   UserPlus, 
   ClipboardList, 
-  Zap,
-  User
+  Zap
 } from 'lucide-react';
 import { RiotStatus, ViewMode } from '../../types';
 import { sound } from '../../services/soundEffects';
@@ -136,17 +135,8 @@ export const TitleBar: React.FC<TitleBarProps> = React.memo(({
         </button>
       </div>
 
-      {/* Right: Role Badge, Settings & Window Controls */}
+      {/* Right: Settings & Window Controls */}
       <div className="flex items-center gap-1.5 app-no-drag shrink-0 ml-auto z-20 pl-3 border-l border-val-border/50 whitespace-nowrap bg-val-bg/95">
-        {/* Solo FOSS Badge */}
-        <div 
-          className="h-7 flex items-center gap-1.5 px-3 rounded-lg border text-xs font-bold font-display tracking-wider uppercase transition-all shrink-0 shadow-sm bg-blue-500/15 border-blue-500/40 text-blue-300 shadow-[0_0_12px_rgba(56,189,248,0.15)] select-none"
-          title="RankForge Solo Grinder (100% Free & Open Source)"
-        >
-          <User className="w-3.5 h-3.5 text-blue-400" />
-          <span>Solo Grinder • FOSS</span>
-        </div>
-
         {/* Settings Button */}
         <button
           onClick={() => { sound.playTacticalClick(); onOpenSettings(); }}

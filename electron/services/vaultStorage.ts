@@ -131,7 +131,6 @@ const DEFAULT_SETTINGS: AppSettings = {
   discord_webhook_url: '',
   discord_notify_level_20: true,
   discord_notify_match_finish: true,
-  discord_live_dashboard_enabled: false,
   user_role: 'solo',
   license_tier: 'solo_pro', // Always unlocked in RankForge FOSS
 };
@@ -332,7 +331,7 @@ export class VaultStorage {
         id: acc.id || crypto.randomUUID(),
         username: acc.username || 'unnamed',
         password: acc.password || '',
-        region: acc.region || 'na',
+        region: acc.region || '',
         level: acc.level || 1,
         current_xp: acc.current_xp || 0,
         decimal_level: acc.decimal_level || 1.0,
@@ -430,7 +429,7 @@ export class VaultStorage {
     return true;
   }
 
-  public bulkImportAccounts(text: string, defaultRegion = 'na'): Account[] {
+  public bulkImportAccounts(text: string, defaultRegion = ''): Account[] {
     const lines = text.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
     const imported: Account[] = [];
 
@@ -463,7 +462,7 @@ export class VaultStorage {
             id: crypto.randomUUID(),
             username,
             password,
-            region: region || defaultRegion,
+            region: region || '',
             level: 1,
             current_xp: 0,
             decimal_level: 1.0,

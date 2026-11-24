@@ -663,58 +663,110 @@ function setupIpcHandlers() {
 
   // HUD Mode
   ipcMain.handle('window:enterHudMode', async () => {
-    if (!mainWindow || isHudMode) return;
-    const settings = vault.getSettings();
-    wasMaximizedBeforeHud = mainWindow.isMaximized();
-    if (wasMaximizedBeforeHud) {
-      mainWindow.unmaximize();
+    if (!mainWindow) return false;
+    if (!isHudMode) {
+      wasMaximizedBeforeHud = mainWindow.isMaximized();
+      if (wasMaximizedBeforeHud) {
+        mainWindow.unmaximize();
+        await new Promise((r) => setTimeout(r, 60));
+      } else {
+        preHudBounds = mainWindow.getBounds();
+      }
+      isHudMode = true;
     }
-    preHudBounds = mainWindow.getBounds();
-    isHudMode = true;
+    const settings = vault.getSettings();
+    const alwaysOnTop = settings.hud_always_on_top ?? true;
+    mainWindow.setAlwaysOnTop(alwaysOnTop, 'screen-saver');
 
-    mainWindow.setMinimumSize(320, 100);
-    mainWindow.setMaximumSize(520, 220);
+    const opacity = typeof settings.hud_opacity === 'number' ? settings.hud_opacity : 0.95;
+    mainWindow.setOpacity(Math.max(0.25, Math.min(1.0, opacity)));
 
-    const hudWidth = settings.hud_scale === 'compact' ? 340 : settings.hud_scale === 'large' ? 440 : 380;
-    const hudHeight = settings.hud_scale === 'compact' ? 120 : settings.hud_scale === 'large' ? 170 : 140;
-
-    mainWindow.setBounds({
-      width: hudWidth,
-      height: hudHeight,
-      x: Math.max(0, preHudBounds.x + preHudBounds.width - hudWidth - 20),
-      y: Math.max(0, preHudBounds.y + 40),
-    });
-
-    mainWindow.setAlwaysOnTop(settings.hud_always_on_top ?? true, 'screen-saver');
-    mainWindow.setOpacity(settings.hud_opacity ?? 0.95);
-    mainWindow.setVisibleOnAllWorkspaces(true);
+    let width = 380;
+    let height = 190;
+    if (settings.hud_scale === 'compact') {
+      width = 330;
+      height = 155;
+    } else if (settings.hud_scale === 'large') {
+      width = 440;
+      height = 220;
+    }
+    mainWindow.setResizable(true);
+    mainWindow.setMaximizable(false);
+    mainWindow.setMinimumSize(0, 0);
+    mainWindow.setMaximumSize(0, 0);
+    mainWindow.setMinimumSize(width, height);
+    mainWindow.setMaximumSize(width, height);
+    mainWindow.setSize(width, height);
+    mainWindow.setResizable(false);
     return true;
   });
 
   ipcMain.handle('window:updateHudConfig', (_, config: { alwaysOnTop?: boolean; scale?: 'compact' | 'normal' | 'large'; opacity?: number }) => {
-    if (!mainWindow || !isHudMode) return false;
+    if (!mainWindow) return false;
     if (config.alwaysOnTop !== undefined) {
       mainWindow.setAlwaysOnTop(config.alwaysOnTop, 'screen-saver');
     }
-    if (config.opacity !== undefined) {
-      mainWindow.setOpacity(config.opacity);
+    if (isHudMode && config.opacity !== undefined) {
+      mainWindow.setOpacity(Math.max(0.25, Math.min(1.0, config.opacity)));
+    }
+    if (isHudMode && config.scale) {
+      let width = 380;
+      let height = 190;
+      if (config.scale === 'compact') {
+        width = 330;
+        height = 155;
+      } else if (config.scale === 'large') {
+        width = 440;
+        height = 220;
+      }
+      mainWindow.setResizable(true);
+      mainWindow.setMinimumSize(0, 0);
+      mainWindow.setMaximumSize(0, 0);
+      mainWindow.setMinimumSize(width, height);
+      mainWindow.setMaximumSize(width, height);
+      mainWindow.setSize(width, height);
+      mainWindow.setResizable(false);
     }
     return true;
   });
 
   ipcMain.handle('window:exitHudMode', () => {
-    if (!mainWindow || !isHudMode) return;
+    if (!mainWindow) return false;
     isHudMode = false;
-    mainWindow.setAlwaysOnTop(false);
     mainWindow.setOpacity(1.0);
-    mainWindow.setMaximumSize(10000, 10000);
-    mainWindow.setMinimumSize(1350, 720);
+    mainWindow.setAlwaysOnTop(false);
+    mainWindow.setResizable(true);
+    mainWindow.setMaximizable(true);
+    mainWindow.setMinimumSize(0, 0);
+    mainWindow.setMaximumSize(0, 0);
 
-    mainWindow.setBounds(preHudBounds);
     if (wasMaximizedBeforeHud) {
       mainWindow.maximize();
+    } else {
+      const settings = vault.getSettings();
+      let defaultW = 1350;
+      let defaultH = 720;
+      if (settings.window_preset === 'large') {
+        defaultW = 1680;
+        defaultH = 960;
+      }
+
+      const targetW = Math.max(preHudBounds?.width || defaultW, defaultW);
+      const targetH = Math.max(preHudBounds?.height || defaultH, defaultH);
+      const currentBounds = mainWindow.getBounds();
+      const targetX = preHudBounds?.x !== undefined ? preHudBounds.x : currentBounds.x;
+      const targetY = preHudBounds?.y !== undefined ? preHudBounds.y : currentBounds.y;
+
+      mainWindow.setBounds({
+        x: targetX,
+        y: targetY,
+        width: targetW,
+        height: targetH,
+      });
     }
-    mainWindow.focus();
+
+    wasMaximizedBeforeHud = false;
+    mainWindow.setMinimumSize(1350, 720);
     return true;
   });
 

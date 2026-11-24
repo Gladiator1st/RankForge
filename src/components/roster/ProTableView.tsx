@@ -20,7 +20,6 @@ import {
   UserPlus,
   Filter,
   Columns2,
-  Shield,
   CheckCircle2,
   GripVertical,
   Target,
@@ -796,15 +795,6 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
               <span>Rank Ready ({counts.soloFinished})</span>
             </button>
           </div>
-
-          {/* Compact Slot Limit Status Badge */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#0A0F1A] rounded-lg border border-[#1A2536] text-xs">
-            <Shield className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span className="text-slate-400 text-[10px] uppercase font-sans font-semibold">Tier:</span>
-            <span className="font-bold px-1.5 py-0.2 rounded text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-              Solo FOSS • Unlimited
-            </span>
-          </div>
         </div>
       </div>
 
@@ -1220,9 +1210,11 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                                           className="px-2 py-0.5 bg-val-bg border border-cyan-500 rounded text-xs font-bold text-white focus:outline-none ring-1 ring-cyan-500/50 w-[140px]"
                                           placeholder="Account name..."
                                         />
-                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-val-border text-val-muted uppercase ml-0.5 shrink-0">
-                                          {account.region || 'EU'}
-                                        </span>
+                                        {account.region ? (
+                                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-val-border text-val-muted uppercase ml-0.5 shrink-0">
+                                            {account.region}
+                                          </span>
+                                        ) : null}
                                       </div>
                                     ) : (
                                       <div 
@@ -1233,9 +1225,11 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
                                         <span className="font-bold text-white tracking-wide group-hover/edit:text-cyan-400 transition-colors truncate shrink-0 max-w-[170px]" title={account.username}>
                                           {account.username}
                                         </span>
-                                        <span className="px-1 py-0.2 text-[9px] font-mono bg-val-border text-val-muted uppercase shrink-0">
-                                          {account.region || 'EU'}
-                                        </span>
+                                        {account.region ? (
+                                          <span className="px-1 py-0.2 text-[9px] font-mono bg-val-border text-val-muted uppercase shrink-0">
+                                            {account.region}
+                                          </span>
+                                        ) : null}
 
                                         <button
                                           type="button"
@@ -1493,7 +1487,9 @@ export const ProTableView: React.FC<ProTableViewProps> = React.memo(({
         >
           <div className="px-2.5 py-1 text-[10px] uppercase font-bold text-slate-400 border-b border-[#1E2C3D]/80 flex items-center justify-between mb-1">
             <span className="truncate">{contextMenu.account.username}</span>
-            <span className="font-mono text-cyan-400 uppercase text-[9px]">{contextMenu.account.region || 'EU'}</span>
+            {contextMenu.account.region && (
+              <span className="font-mono text-cyan-400 uppercase text-[9px]">{contextMenu.account.region}</span>
+            )}
           </div>
 
           <button

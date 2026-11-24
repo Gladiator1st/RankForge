@@ -237,9 +237,11 @@ const AccountCardInner: React.FC<AccountCardProps> = ({
                     className="px-2 py-0.5 bg-val-bg border border-val-red focus:border-val-red rounded text-xs font-bold text-white focus:outline-none ring-1 ring-val-red/50 max-w-[150px]"
                     placeholder="Account name..."
                   />
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-val-border/60 text-val-muted">
-                    {account.region || 'EU'}
-                  </span>
+                  {account.region && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-val-border/60 text-val-muted">
+                      {account.region}
+                    </span>
+                  )}
                 </div>
               ) : (
                 <div 
@@ -250,9 +252,11 @@ const AccountCardInner: React.FC<AccountCardProps> = ({
                   <h3 className="font-bold text-sm text-val-light group-hover/edit:text-val-red tracking-wide truncate max-w-[150px]">
                     {account.username}
                   </h3>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-val-border/60 text-val-muted">
-                    {account.region || 'EU'}
-                  </span>
+                  {account.region && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-val-border/60 text-val-muted">
+                      {account.region}
+                    </span>
+                  )}
                 </div>
               )}
               <p className="text-xs text-val-muted font-mono mt-0.5">

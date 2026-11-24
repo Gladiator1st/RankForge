@@ -102,8 +102,6 @@ export interface AppSettings {
   discord_webhook_url: string;
   discord_notify_level_20: boolean;
   discord_notify_match_finish: boolean;
-  discord_dashboard_message_id?: string;
-  discord_live_dashboard_enabled?: boolean;
 
   // HUD Overlay Preferences
   hud_always_on_top?: boolean;
